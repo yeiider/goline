@@ -4,14 +4,12 @@ import React, { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import ReCAPTCHA from "react-google-recaptcha"
 
 export default function NewsletterSignup() {
     const [email, setEmail] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [message, setMessage] = useState('');
     const [isError, setIsError] = useState(false);
-    const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -28,13 +26,7 @@ export default function NewsletterSignup() {
             return;
         }
 
-        // Validación del token de reCAPTCHA
-        if (!recaptchaToken) {
-            setIsError(true);
-            setMessage('Please complete the CAPTCHA.');
-            setIsLoading(false);
-            return;
-        }
+
 
         try {
             const response = await fetch('/api/newsletter', {
@@ -44,7 +36,6 @@ export default function NewsletterSignup() {
                 },
                 body: JSON.stringify({
                     email,
-                    recaptchaToken, // enviar el token al backend
                 }),
             });
             const data = await response.json();
