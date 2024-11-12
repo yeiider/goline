@@ -1,12 +1,12 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
-import { ChevronDown, Menu, X } from "lucide-react";
+import Link from 'next/link';
+import { ChevronDown, Menu, X } from 'lucide-react'; // Las librerías usadas
 
-export default function Header() {
+function Header() {
     const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [isDropdownOpen, setDropdownOpen] = useState(false);
-    const dropdownRef = useRef(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
     const toggleMobileMenu = () => {
         setMobileMenuOpen(!isMobileMenuOpen);
@@ -16,15 +16,18 @@ export default function Header() {
         setDropdownOpen(!isDropdownOpen);
     };
 
-    // Cerrar el dropdown si el usuario hace clic fuera de él
     useEffect(() => {
-        function handleClickOutside(event:object) {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && event.target instanceof Node && !dropdownRef.current.contains(event.target)) {
                 setDropdownOpen(false);
             }
-        }
+        };
+
         document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
     }, []);
 
     return (
@@ -36,26 +39,24 @@ export default function Header() {
                             GO <span className="text-white">LINE</span>
                         </Link>
                     </div>
-                    {/* Desktop Menu */}
                     <div className="hidden md:flex items-center space-x-6">
                         <div ref={dropdownRef} className="relative">
                             <button className="flex items-center space-x-1" onClick={toggleDropdown}>
                                 <span>Soluciones</span>
                                 <ChevronDown size={16} />
                             </button>
-                            {/* Dropdown Menu */}
                             {isDropdownOpen && (
                                 <div className="absolute left-0 mt-2 w-48 bg-[#081029] text-gray-500 rounded-md shadow-lg py-2 z-10">
                                     <Link href="/modelado-negocios-digitales" onClick={toggleDropdown} className="block px-4 py-2 hover:text-green-400">
                                         Modelado de Negocios Digitales
                                     </Link>
-                                    <Link href="/staff" className="block px-4 py-2  hover:text-green-400" onClick={toggleDropdown}>
+                                    <Link href="/staff" className="block px-4 py-2 hover:text-green-400" onClick={toggleDropdown}>
                                         Staff Augmentation
                                     </Link>
-                                    <Link href="/infra" className="block px-4 py-2  hover:text-green-400" onClick={toggleDropdown}>
+                                    <Link href="/infra" className="block px-4 py-2 hover:text-green-400" onClick={toggleDropdown}>
                                         Infraestructura y Ciberseguridad
                                     </Link>
-                                    <Link href="/ecommerce" className="block px-4 py-2  hover:text-green-400" onClick={toggleDropdown}>
+                                    <Link href="/ecommerce" className="block px-4 py-2 hover:text-green-400" onClick={toggleDropdown}>
                                         Servicios Ecommerce
                                     </Link>
                                 </div>
@@ -67,29 +68,23 @@ export default function Header() {
                         <Link href="/blog" className="hover:text-[#8efa00]">
                             Blog
                         </Link>
-
-                        <Link href={"/contacto"} className="bg-[#8efa00] text-[#0a0b1a] px-4 py-2 rounded-md hover:bg-[#7de600]">
+                        <Link href="/contacto" className="bg-[#8efa00] text-[#0a0b1a] px-4 py-2 rounded-md hover:bg-[#7de600]">
                             Contáctanos
                         </Link>
                     </div>
-
-                    {/* Mobile Menu Button */}
                     <button onClick={toggleMobileMenu} className="md:hidden">
                         {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
                     </button>
                 </nav>
-
-                {/* Mobile Menu */}
                 <div className={`md:hidden ${isMobileMenuOpen ? 'block' : 'hidden'} bg-[#081029] text-white`}>
-                    <ul className="flex flex-col  space-y-4 py-4">
+                    <ul className="flex flex-col space-y-4 py-4">
                         <li>
                             <button className="flex" onClick={toggleDropdown}>
-                                Soluciones <ChevronDown size={16}  className="ml-10"/>
+                                Soluciones <ChevronDown size={16} className="ml-10" />
                             </button>
-                            {/* Dropdown Menu in Mobile */}
                             {isDropdownOpen && (
                                 <div className="mt-2 space-y-2">
-                                    <Link href="/modelado-negocios-digitales" className="block border-b-2  px-4 py-2 hover:text-[#8efa00]">
+                                    <Link href="/modelado-negocios-digitales" className="block border-b-2 px-4 py-2 hover:text-[#8efa00]">
                                         Modelado de Negocios Digitales
                                     </Link>
                                     <Link href="/staff" className="block border-b-2 px-4 py-2 hover:text-[#8efa00]">
@@ -130,3 +125,5 @@ export default function Header() {
         </header>
     );
 }
+
+export default Header;
