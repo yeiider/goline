@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Header from "@/app/components/header";
 import Footer from "@/app/components/footer";
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -33,6 +34,7 @@ export default function RootLayout({
       <Header />
         <main>{children}</main>
       <Footer />
+      <SpeedInsights />
       </body>
     </html>
   );
