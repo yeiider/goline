@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 export default function CodigoEticaBanner() {
     return (
         <div className="px-4 py-20 gradient-c text-white">

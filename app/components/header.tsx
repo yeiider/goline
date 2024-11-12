@@ -18,7 +18,7 @@ export default function Header() {
 
     // Cerrar el dropdown si el usuario hace clic fuera de él
     useEffect(() => {
-        function handleClickOutside(event) {
+        function handleClickOutside(event:object) {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setDropdownOpen(false);
             }

@@ -1,4 +1,3 @@
-// components/CodigoEtica.js
 export default function CodigoEtica() {
     return (
         <div className="px-4 py-16 bg-gray-100 text-gray-800">

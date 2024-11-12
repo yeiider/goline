@@ -1,6 +1,5 @@
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Brain, Cog, BarChart, ArrowRight } from "lucide-react";
+import { Brain, Cog, BarChart } from "lucide-react";
 import Link from "next/link";
 
 export default function ServiciosIa() {
