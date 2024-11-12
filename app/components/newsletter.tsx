@@ -4,41 +4,61 @@ import React, { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import ReCAPTCHA from "react-google-recaptcha"
 
 export default function NewsletterSignup() {
-    const [email, setEmail] = useState('')
-    const [isLoading, setIsLoading] = useState(false)
-    const [message, setMessage] = useState('')
-    const [isError, setIsError] = useState(false)
+    const [email, setEmail] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [message, setMessage] = useState('');
+    const [isError, setIsError] = useState(false);
+    const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        setIsLoading(true)
-        setMessage('')
-        setIsError(false)
+        e.preventDefault();
+        setIsLoading(true);
+        setMessage('');
+        setIsError(false);
 
-        // Email validation
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        // Validación del correo electrónico
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
-            setIsError(true)
-            setMessage('Please enter a valid email address.')
-            setIsLoading(false)
-            return
+            setIsError(true);
+            setMessage('Please enter a valid email address.');
+            setIsLoading(false);
+            return;
         }
 
-        // Simulate API call
-        try {
-            await new Promise(resolve => setTimeout(resolve, 1500)) // Simulate network delay
-            // Simulated success
-            setMessage('Thank you for subscribing to our newsletter!')
-            setEmail('')
-        } catch (error) {
-            setIsError(true)
-            setMessage('An error occurred. Please try again later.')
-        } finally {
-            setIsLoading(false)
+        // Validación del token de reCAPTCHA
+        if (!recaptchaToken) {
+            setIsError(true);
+            setMessage('Please complete the CAPTCHA.');
+            setIsLoading(false);
+            return;
         }
-    }
+
+        try {
+            const response = await fetch('/api/newsletter', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email,
+                    recaptchaToken, // enviar el token al backend
+                }),
+            });
+            const data = await response.json();
+            if (data.success) {
+                setMessage(data.message);
+                setEmail('');
+            }
+        } catch (error) {
+            setIsError(true);
+            setMessage('An error occurred. Please try again later.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
         <div className="bg-primary-foreground py-12 px-4 sm:px-6 lg:px-8">
@@ -67,19 +87,19 @@ export default function NewsletterSignup() {
                             disabled={isLoading}
                         />
                     </div>
+
+                    <ReCAPTCHA
+                        sitekey={'6LdG-HsqAAAAAJ4kTdtDT0Pn0Vx360qGW0fuE4KV'}
+                        onChange={(token) => setRecaptchaToken(token)}
+                    />
+
+
                     <Button
                         type="submit"
                         className="w-full"
                         disabled={isLoading}
                     >
-                        {isLoading ? (
-                            <>
-
-                                Subscribing...
-                            </>
-                        ) : (
-                            'Subscribe'
-                        )}
+                        {isLoading ? 'Subscribing...' : 'Subscribe'}
                     </Button>
                 </form>
                 {message && (
@@ -89,5 +109,5 @@ export default function NewsletterSignup() {
                 )}
             </div>
         </div>
-    )
+    );
 }
