@@ -88,10 +88,7 @@ export default function NewsletterSignup() {
                         />
                     </div>
 
-                    <ReCAPTCHA
-                        sitekey={'6LdG-HsqAAAAAJ4kTdtDT0Pn0Vx360qGW0fuE4KV'}
-                        onChange={(token) => setRecaptchaToken(token)}
-                    />
+
 
 
                     <Button
