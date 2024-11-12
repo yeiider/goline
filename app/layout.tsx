@@ -4,7 +4,6 @@ import "./globals.css";
 import Header from "@/app/components/header";
 import Footer from "@/app/components/footer";
 import { SpeedInsights } from "@vercel/speed-insights/next"
-import {Author} from "next/dist/lib/metadata/types/metadata-types";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
