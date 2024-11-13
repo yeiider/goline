@@ -30,7 +30,7 @@ export const metadata: Metadata = {
         name: "Goline",
     },
     icons: {
-        icon: "/images/goline/icon2.svg",  // Agrega la ruta de tu archivo .svg
+        icon: "/images/goline/go.svg",
     },
     robots: "index, follow",
 };
@@ -43,7 +43,7 @@ export default function RootLayout({
     return (
         <html lang="en">
         <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+            className={`${geistSans.variable} ${geistMono.variable} antialiased `}
         >
         <Header />
         <ReCaptchaProvider>

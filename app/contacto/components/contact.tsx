@@ -105,12 +105,11 @@ export default function ContactoGoline() {
             />
             <div className="relative mx-auto max-w-7xl px-4 py-12 lg:py-24">
                 <div className="grid gap-12 lg:grid-cols-2">
-                    {/* Contact Information Section */}
                     <motion.div
                         initial={{ opacity: 0, x: -50 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.6 }}
-                        className="flex flex-col justify-center"
+                        className="flex flex-col justify-center mt-12 lg:mt-0 lg:max-w-lg lg:mx-auto"
                     >
                         <div className="space-y-8">
                             <div className="space-y-6">
