@@ -1,15 +1,17 @@
-'use client'
+'use client';
 
-import React, { useState } from 'react'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import React, { useState } from 'react';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 
 export default function NewsletterSignup() {
     const [email, setEmail] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [message, setMessage] = useState('');
     const [isError, setIsError] = useState(false);
+    const { executeRecaptcha } = useGoogleReCaptcha();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -21,31 +23,55 @@ export default function NewsletterSignup() {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
             setIsError(true);
-            setMessage('Please enter a valid email address.');
+            setMessage('Por favor, ingresa una dirección de correo electrónico válida.');
             setIsLoading(false);
             return;
         }
 
-
+        if (!executeRecaptcha) {
+            setIsError(true);
+            setMessage('reCAPTCHA no cargado. Por favor, inténtalo de nuevo más tarde.');
+            setIsLoading(false);
+            return;
+        }
 
         try {
+            const recaptchaToken = await executeRecaptcha('newsletter');
+
+            const recaptchaResponse = await fetch('/api/validate-recaptcha', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token: recaptchaToken, action: 'newsletter' }),
+            });
+
+            const recaptchaData = await recaptchaResponse.json();
+
+            if (!recaptchaData.success) {
+                setIsError(true);
+                setMessage(recaptchaData.message || 'La validación de reCAPTCHA falló');
+                setIsLoading(false);
+                return;
+            }
+
             const response = await fetch('/api/newsletter', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    email,
-                }),
+                body: JSON.stringify({ email }),
             });
+
             const data = await response.json();
             if (data.success) {
                 setMessage(data.message);
                 setEmail('');
+            } else {
+                setIsError(true);
+                setMessage(data.message || 'Ocurrió un error. Por favor, inténtalo de nuevo más tarde.');
             }
         } catch (error) {
             setIsError(true);
-            setMessage('An error occurred. Please try again later.');
+            setMessage('Ocurrió un error. Por favor, inténtalo de nuevo más tarde.');
         } finally {
             setIsLoading(false);
         }
@@ -55,15 +81,15 @@ export default function NewsletterSignup() {
         <div className="bg-primary-foreground py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-md mx-auto">
                 <h2 className="text-3xl font-extrabold text-primary text-center mb-6">
-                    Subscribe to Our Newsletter
+                    Suscríbete a Nuestro Newsletter
                 </h2>
                 <p className="text-center text-muted-foreground mb-8">
-                    Stay updated with our latest news and offers.
+                    Mantente actualizado con nuestras últimas noticias y ofertas.
                 </p>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <Label htmlFor="email" className="sr-only">
-                            Email address
+                            Dirección de correo electrónico
                         </Label>
                         <Input
                             id="email"
@@ -72,22 +98,19 @@ export default function NewsletterSignup() {
                             autoComplete="email"
                             required
                             className="w-full"
-                            placeholder="Enter your email"
+                            placeholder="Ingresa tu correo electrónico"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             disabled={isLoading}
                         />
                     </div>
 
-
-
-
                     <Button
                         type="submit"
                         className="w-full"
                         disabled={isLoading}
                     >
-                        {isLoading ? 'Subscribing...' : 'Subscribe'}
+                        {isLoading ? 'Suscribiendo...' : 'Suscribirse'}
                     </Button>
                 </form>
                 {message && (

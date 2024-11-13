@@ -1,14 +1,15 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { ArrowRight, CheckCircle, Loader2, MapPin, Mail, Phone } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { ArrowRight, CheckCircle, Loader2, MapPin, Mail, Phone } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 
 export default function ContactoGoline() {
     const [formData, setFormData] = useState({
@@ -19,39 +20,62 @@ export default function ContactoGoline() {
         email: '',
         phone: '',
         message: '',
-    })
-    const [isLoading, setIsLoading] = useState(false)
-    const [isSuccess, setIsSuccess] = useState(false)
-    const [responseMessage, setResponseMessage] = useState('')
+    });
+    const [isLoading, setIsLoading] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [responseMessage, setResponseMessage] = useState('');
+    const { executeRecaptcha } = useGoogleReCaptcha();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setFormData({
             ...formData,
             [e.target.id]: e.target.value,
-        })
-    }
+        });
+    };
 
     const handleSelectChange = (value: string) => {
         setFormData({
             ...formData,
             size: value,
-        })
-    }
+        });
+    };
 
-    async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
-        event.preventDefault()
-        setIsLoading(true)
+    async function onSubmit(event: React.FormEvent) {
+        event.preventDefault();
+        setIsLoading(true);
+        setResponseMessage('');
         try {
+            if (!executeRecaptcha) {
+                setResponseMessage('reCAPTCHA no está disponible. Por favor, inténtalo más tarde.');
+                setIsLoading(false);
+                return;
+            }
+
+            const recaptchaToken = await executeRecaptcha('contact_form');
+            const recaptchaResponse = await fetch('/api/validate-recaptcha', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token: recaptchaToken, action: 'contact_form' }),
+            });
+
+            const recaptchaData = await recaptchaResponse.json();
+
+            if (!recaptchaData.success) {
+                setResponseMessage(recaptchaData.message || 'La validación de reCAPTCHA falló');
+                setIsLoading(false);
+                return;
+            }
+
             const res = await fetch('/api/contact', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(formData),
-            })
-            const data = await res.json()
+            });
+            const data = await res.json();
             if (data.success) {
-                setIsSuccess(true)
+                setIsSuccess(true);
                 setFormData({
                     name: '',
                     role: '',
@@ -60,33 +84,32 @@ export default function ContactoGoline() {
                     email: '',
                     phone: '',
                     message: '',
-                })
+                });
             } else {
-                setResponseMessage(data.message || 'Error al enviar el mensaje.')
+                setResponseMessage(data.message || 'Error al enviar el mensaje.');
             }
         } catch (error) {
-            console.error('Error al enviar el formulario:', error)
-            setResponseMessage('Error al enviar el mensaje.')
+            console.error('Error al enviar el formulario:', error);
+            setResponseMessage('Error al enviar el mensaje.');
         }
-        setIsLoading(false)
+        setIsLoading(false);
     }
-
 
     return (
         <div className="relative overflow-hidden">
             <motion.div
-                initial={{opacity: 0}}
-                animate={{opacity: 1}}
-                transition={{duration: 1}}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 1 }}
                 className="absolute inset-0 bg-gradient-to-br from-blue-700 to-blue-900 pointer-events-none"
             />
             <div className="relative mx-auto max-w-7xl px-4 py-12 lg:py-24">
                 <div className="grid gap-12 lg:grid-cols-2">
                     {/* Contact Information Section */}
                     <motion.div
-                        initial={{opacity: 0, x: -50}}
-                        animate={{opacity: 1, x: 0}}
-                        transition={{duration: 0.6}}
+                        initial={{ opacity: 0, x: -50 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.6 }}
                         className="flex flex-col justify-center"
                     >
                         <div className="space-y-8">
@@ -100,21 +123,21 @@ export default function ContactoGoline() {
                                 </p>
                             </div>
                             <motion.div
-                                initial={{opacity: 0, y: 20}}
-                                animate={{opacity: 1, y: 0}}
-                                transition={{duration: 0.8, delay: 0.2}}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.8, delay: 0.2 }}
                                 className="space-y-4"
                             >
                                 <div className="flex items-center gap-3 text-white/90">
-                                    <MapPin className="h-5 w-5"/>
+                                    <MapPin className="h-5 w-5" />
                                     <span>Cali, Colombia</span>
                                 </div>
                                 <div className="flex items-center gap-3 text-white/90">
-                                    <Mail className="h-5 w-5"/>
+                                    <Mail className="h-5 w-5" />
                                     <span>contacto@goline.com.co</span>
                                 </div>
                                 <div className="flex items-center gap-3 text-white/90">
-                                    <Phone className="h-5 w-5"/>
+                                    <Phone className="h-5 w-5" />
                                     <span>+57 320 775 3755</span>
                                 </div>
                             </motion.div>
@@ -123,15 +146,16 @@ export default function ContactoGoline() {
 
                     {/* Contact Form Section */}
                     <motion.div
-                        initial={{opacity: 0, y: 30}}
-                        animate={{opacity: 1, y: 0}}
-                        transition={{duration: 0.6, delay: 0.3}}
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.3 }}
                     >
                         <Card
-                            className="p-6 lg:p-8 bg-white/80 backdrop-blur-md shadow-xl hover:shadow-2xl transition-shadow">
+                            className="p-6 lg:p-8 bg-white/80 backdrop-blur-md shadow-xl hover:shadow-2xl transition-shadow"
+                        >
                             {isSuccess ? (
                                 <div className="flex h-full flex-col items-center justify-center space-y-4 text-center">
-                                    <CheckCircle className="h-12 w-12 text-green-500"/>
+                                    <CheckCircle className="h-12 w-12 text-green-500" />
                                     <h2 className="text-2xl font-bold">¡Mensaje Enviado!</h2>
                                     <p className="text-muted-foreground">
                                         Gracias por contactarnos. Nos pondremos en contacto contigo pronto.
@@ -177,7 +201,7 @@ export default function ContactoGoline() {
                                                 <Label htmlFor="size">Tamaño de la empresa</Label>
                                                 <Select onValueChange={handleSelectChange} value={formData.size}>
                                                     <SelectTrigger id="size">
-                                                        <SelectValue placeholder="Selecciona"/>
+                                                        <SelectValue placeholder="Selecciona" />
                                                     </SelectTrigger>
                                                     <SelectContent>
                                                         <SelectItem value="1-10">1-10 empleados</SelectItem>
@@ -231,13 +255,13 @@ export default function ContactoGoline() {
                                     >
                                         {isLoading ? (
                                             <>
-                                                <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                                 Enviando...
                                             </>
                                         ) : (
                                             <>
                                                 Enviar mensaje
-                                                <ArrowRight className="ml-2 h-4 w-4"/>
+                                                <ArrowRight className="ml-2 h-4 w-4" />
                                             </>
                                         )}
                                     </Button>
@@ -248,5 +272,5 @@ export default function ContactoGoline() {
                 </div>
             </div>
         </div>
-    )
+    );
 }

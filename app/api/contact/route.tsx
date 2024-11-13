@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { db } from '../../ultils/firebaseAdmin'
+import { db } from '@/utils/firebaseAdmin';
 import { z } from 'zod'
 
 const ContactFormSchema = z.object({
