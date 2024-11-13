@@ -29,6 +29,9 @@ export const metadata: Metadata = {
         url: "https://goline.com.co",
         name: "Goline",
     },
+    icons: {
+        icon: "/images/goline/icon2.svg",  // Agrega la ruta de tu archivo .svg
+    },
     robots: "index, follow",
 };
 

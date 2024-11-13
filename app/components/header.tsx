@@ -1,6 +1,8 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Link from 'next/link';
+import Image from "next/image";
+
 import { ChevronDown, Menu, X } from 'lucide-react'; // Las librerías usadas
 
 function Header() {
@@ -36,7 +38,12 @@ function Header() {
                 <nav className="flex items-center justify-between py-4">
                     <div className="flex items-center">
                         <Link href="/" className="text-2xl font-bold text-green-400">
-                            GO <span className="text-white">LINE</span>
+                            <Image
+                                src="/images/goline/logo.svg"
+                                alt="banner"
+                                width={100}
+                                height={40}
+                            />
                         </Link>
                     </div>
                     <div className="hidden md:flex items-center space-x-6">
