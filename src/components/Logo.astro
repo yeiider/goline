@@ -1,0 +1,72 @@
+---
+// Logo de Goline en línea, para poder animar el trazo de la "G".
+// El trazado del logotipo viene de public/brand/goline-logo.svg (generado por scripts/build-logo.mjs).
+import source from '../../public/brand/goline-logo.svg?raw';
+
+interface Props {
+  variant?: 'full' | 'mark';
+  class?: string;
+  animate?: boolean;
+}
+const { variant = 'full', class: className = '', animate = false } = Astro.props;
+const id = `g-${Math.random().toString(36).slice(2, 8)}`;
+
+const word = source.match(/<g transform="translate\([^"]+\)">[\s\S]*?<\/g>/)?.[0] ?? '';
+const width = Number(source.match(/viewBox="0 0 (\d+) 64"/)?.[1] ?? 230);
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox={variant === 'mark' ? '0 0 64 64' : `0 0 ${width} 64`}
+  class:list={['goline-logo', { 'is-animated': animate }, className]}
+  role="img"
+  aria-label="Goline"
+>
+  <defs>
+    <linearGradient id={id} x1="8" y1="8" x2="58" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#3B5BFF"></stop>
+      <stop offset=".5" stop-color="#8A5CFF"></stop>
+      <stop offset="1" stop-color="#FF6A3D"></stop>
+    </linearGradient>
+  </defs>
+  <path
+    class="logo-stroke"
+    pathLength="1"
+    d="M46.14 15.15A22 22 0 1 0 54 32H42"
+    fill="none"
+    stroke={`url(#${id})`}
+    stroke-width="8"
+    stroke-linecap="round"
+    stroke-linejoin="round"></path>
+  <circle class="logo-node" cx="32" cy="32" r="5" fill="#FF6A3D"></circle>
+  {variant === 'full' && <Fragment set:html={word} />}
+</svg>
+
+<style>
+  .goline-logo :global(path:not(.logo-stroke)) {
+    fill: currentColor;
+  }
+  .goline-logo :global(g circle) {
+    fill: var(--color-ember);
+  }
+  .is-animated .logo-stroke {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: draw 1.6s cubic-bezier(0.65, 0, 0.35, 1) 0.2s forwards;
+  }
+  .is-animated .logo-node {
+    transform-origin: 32px 32px;
+    transform: scale(0);
+    animation: pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 1.5s forwards;
+  }
+  @keyframes draw {
+    to { stroke-dashoffset: 0; }
+  }
+  @keyframes pop {
+    to { transform: scale(1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .is-animated .logo-stroke { stroke-dashoffset: 0; animation: none; }
+    .is-animated .logo-node { transform: none; animation: none; }
+  }
+</style>

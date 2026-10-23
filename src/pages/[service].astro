@@ -1,0 +1,102 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Base from '@/layouts/Base.astro';
+import Icon from '@/components/Icon.astro';
+import NeuralField from '@/components/NeuralField.astro';
+import SectionHeading from '@/components/SectionHeading.astro';
+import AgentDemo from '@/components/AgentDemo.astro';
+import CTA from '@/components/CTA.astro';
+import { services, type Service } from '@/data/site';
+
+export const getStaticPaths = (() => services.map((s) => ({ params: { service: s.slug }, props: { s } }))) satisfies GetStaticPaths;
+
+const { s } = Astro.props as { s: Service };
+const others = services.filter((o) => o.slug !== s.slug);
+const isAI = s.slug === 'inteligencia-artificial';
+---
+
+<Base title={s.title} description={`${s.headline} ${s.intro}`}>
+  <section class="relative isolate overflow-hidden pt-40 pb-20">
+    <div class="grid-bg absolute inset-0 -z-10"></div>
+    <NeuralField class="absolute inset-0 -z-10 size-full opacity-70" density={0.7} />
+    <div class="absolute -top-20 right-0 -z-10 size-[520px] rounded-full bg-iris/20 blur-[110px]"></div>
+    <div class="container-x flex flex-col gap-7">
+      <a href="/#servicios" class="font-mono text-xs text-mist hover:text-paper">← Servicios</a>
+      <span class="eyebrow">{s.line}</span>
+      <h1 class="max-w-4xl text-4xl leading-[1.04] font-extrabold tracking-[-0.03em] sm:text-6xl">{s.headline}</h1>
+      <p class="max-w-2xl text-lg leading-relaxed text-mist">{s.intro}</p>
+      <div class="flex flex-wrap gap-3">
+        <a href="/contacto" class="btn-primary">Hablemos de tu proyecto <Icon name="arrow" class="size-4" /></a>
+      </div>
+      <ul class="mt-6 flex flex-wrap gap-2">
+        {s.stack.map((t) => <li class="rounded-full border border-line bg-ink-2/70 px-3 py-1 font-mono text-xs text-mist">{t}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="container-x pt-12">
+    <SectionHeading eyebrow="Qué incluye" title={s.title} />
+    <div class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        s.features.map((f, i) => (
+          <article class="card spotlight flex flex-col gap-4 p-7" data-reveal style={`--d:${i * 70}ms`}>
+            <span class="size-2.5 rounded-full bg-ember animate-pulse-node" />
+            <h3 class="text-xl font-semibold">{f.title}</h3>
+            <p class="text-sm leading-relaxed text-mist">{f.text}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  {
+    isAI && (
+      <section class="container-x pt-28">
+        <div class="grid items-center gap-12 lg:grid-cols-2">
+          <SectionHeading
+            eyebrow="Caso real"
+            title="El agente de ISPGO, en producción."
+            text="Conectado por MCP a facturación, tickets y monitoreo de red. Resuelve solicitudes completas y escala a una persona cuando hace falta."
+          />
+          <div data-reveal><AgentDemo /></div>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="container-x grid gap-12 pt-28 lg:grid-cols-[1fr_1.4fr]">
+    <SectionHeading eyebrow="Preguntas frecuentes" title="Lo que suelen preguntarnos." />
+    <div class="flex flex-col divide-y divide-line border-y border-line" data-reveal>
+      {
+        s.faq.map((f) => (
+          <details class="group py-5">
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-6 text-lg font-semibold [&::-webkit-details-marker]:hidden">
+              {f.q}
+              <Icon name="plus" class="size-5 shrink-0 text-iris transition group-open:rotate-45" />
+            </summary>
+            <p class="pt-3 leading-relaxed text-mist">{f.a}</p>
+          </details>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="container-x pt-28">
+    <h2 class="eyebrow mb-6">Otras capacidades</h2>
+    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        others.map((o) => (
+          <a href={`/${o.slug}`} class="card spotlight group flex items-center justify-between gap-4 p-5">
+            <span class="flex flex-col gap-1">
+              <span class="font-mono text-[11px] text-iris">{o.line}</span>
+              <span class="font-semibold">{o.title}</span>
+            </span>
+            <Icon name="arrow" class="size-4 text-mist transition group-hover:translate-x-1 group-hover:text-paper" />
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <CTA />
+</Base>

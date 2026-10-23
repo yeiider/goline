@@ -1,0 +1,102 @@
+---
+// Simulación del agente de IA de ISPGO atendiendo por WhatsApp con herramientas MCP.
+const steps = [
+  { kind: 'user', text: 'Hola, no tengo internet desde esta mañana.' },
+  { kind: 'tool', call: 'ispgo.clientes.buscar(telefono)', result: 'Contrato 4821 · Fibra 300 Mbps' },
+  { kind: 'tool', call: 'oltgo.onu.estado("ZTE 1/3/7")', result: 'LOS · sin señal óptica' },
+  { kind: 'bot', text: 'Hola Laura. Revisé tu equipo y la fibra no está recibiendo señal. Abrí el ticket 1093 y un técnico pasa hoy entre 2 y 4 p. m.' },
+  { kind: 'user', text: 'Perfecto. ¿Y cuánto debo este mes?' },
+  { kind: 'tool', call: 'ispgo.facturas.saldo(4821)', result: '$89.900 · vence el 30 de octubre' },
+  { kind: 'bot', text: 'Tu saldo es de $89.900 y vence el 30 de octubre. Te envío el link de pago por aquí mismo.' },
+];
+---
+
+<div class="agent-demo card flex h-full flex-col p-0">
+  <div class="flex items-center gap-3 border-b border-line px-5 py-4">
+    <span class="grid size-10 place-items-center rounded-full bg-brand-gradient font-display text-sm font-bold text-white">AI</span>
+    <div class="leading-tight">
+      <p class="font-semibold">Agente ISPGO</p>
+      <p class="flex items-center gap-1.5 text-xs text-mist"><span class="size-2 rounded-full bg-[#4ADE80]"></span> en línea · WhatsApp</p>
+    </div>
+    <span class="ml-auto font-mono text-[11px] text-mist">demo</span>
+  </div>
+  <ol class="agent-steps flex flex-1 flex-col gap-3 p-5 text-sm" aria-label="Conversación de ejemplo con el agente">
+    {
+      steps.map((s) =>
+        s.kind === 'tool' ? (
+          <li class="agent-step self-start rounded-xl border border-dashed border-line bg-ink/60 px-3 py-2 font-mono text-[11.5px] leading-relaxed">
+            <span class="text-iris">→ {s.call}</span>
+            <br />
+            <span class="text-mist">{s.result}</span>
+          </li>
+        ) : (
+          <li
+            class:list={[
+              'agent-step max-w-[85%] rounded-2xl px-4 py-2.5 leading-relaxed',
+              s.kind === 'user' ? 'self-end rounded-br-md bg-volt text-white' : 'self-start rounded-bl-md bg-ink-3 text-paper',
+            ]}
+          >
+            {s.text}
+          </li>
+        ),
+      )
+    }
+    <li class="agent-typing hidden self-start rounded-2xl rounded-bl-md bg-ink-3 px-4 py-3" aria-hidden="true">
+      <span class="flex gap-1"><i class="size-1.5 animate-bounce rounded-full bg-mist"></i><i class="size-1.5 animate-bounce rounded-full bg-mist [animation-delay:120ms]"></i><i class="size-1.5 animate-bounce rounded-full bg-mist [animation-delay:240ms]"></i></span>
+    </li>
+  </ol>
+</div>
+
+<style>
+  .agent-demo.is-playing .agent-step:not(.shown) {
+    display: none;
+  }
+  .agent-step.shown {
+    animation: msg-in 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  @keyframes msg-in {
+    from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  }
+</style>
+
+<script>
+  function play(root: HTMLElement) {
+    if (root.dataset.ready) return;
+    root.dataset.ready = '1';
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const list = root.querySelector('.agent-steps') as HTMLElement;
+    // Fija la altura final para que la tarjeta no salte mientras aparecen los mensajes.
+    list.style.minHeight = `${list.offsetHeight}px`;
+    const steps = [...root.querySelectorAll<HTMLElement>('.agent-step')];
+    const typing = root.querySelector<HTMLElement>('.agent-typing')!;
+    root.classList.add('is-playing');
+    let i = 0;
+    const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+    const run = async () => {
+      while (root.isConnected) {
+        steps.forEach((s) => s.classList.remove('shown'));
+        for (i = 0; i < steps.length; i++) {
+          const el = steps[i];
+          const isBot = !el.classList.contains('self-end') && !el.classList.contains('font-mono');
+          if (isBot) {
+            typing.classList.remove('hidden');
+            el.before(typing);
+            await wait(1100);
+            typing.classList.add('hidden');
+          } else {
+            await wait(el.classList.contains('font-mono') ? 650 : 900);
+          }
+          el.classList.add('shown');
+        }
+        await wait(5000);
+      }
+    };
+    new IntersectionObserver((entries, obs) => {
+      if (entries[0].isIntersecting) {
+        obs.disconnect();
+        run();
+      }
+    }, { threshold: 0.3 }).observe(root);
+  }
+  document.addEventListener('astro:page-load', () => document.querySelectorAll<HTMLElement>('.agent-demo').forEach(play));
+</script>

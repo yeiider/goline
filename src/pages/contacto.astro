@@ -1,0 +1,93 @@
+---
+import Base from '@/layouts/Base.astro';
+import Icon from '@/components/Icon.astro';
+import NeuralField from '@/components/NeuralField.astro';
+import { site, services } from '@/data/site';
+
+const field = 'w-full rounded-2xl border border-line bg-ink-2 px-4 py-3 text-paper placeholder:text-mist/60 transition focus:border-iris focus:outline-none';
+---
+
+<Base title="Contacto" description="Cuéntanos qué quieres construir o automatizar. El equipo de Goline te responde en menos de un día hábil.">
+  <section class="relative isolate overflow-hidden pt-40 pb-10">
+    <NeuralField class="absolute inset-0 -z-10 size-full opacity-50" density={0.5} />
+    <div class="container-x grid gap-14 lg:grid-cols-[1fr_1.2fr]">
+      <div class="flex flex-col gap-8">
+        <span class="eyebrow">Contacto</span>
+        <h1 class="text-4xl leading-[1.04] font-extrabold tracking-[-0.03em] sm:text-6xl">Hablemos de lo que quieres construir.</h1>
+        <p class="max-w-md text-lg text-mist">Te respondemos en menos de un día hábil con una propuesta de próximos pasos.</p>
+        <ul class="flex flex-col gap-4">
+          <li><a href={`mailto:${site.email}`} class="flex items-center gap-4 text-paper hover:text-iris"><span class="grid size-11 place-items-center rounded-full border border-line"><Icon name="mail" class="size-5" /></span>{site.email}</a></li>
+          <li><a href={site.whatsapp} class="flex items-center gap-4 text-paper hover:text-iris"><span class="grid size-11 place-items-center rounded-full border border-line"><Icon name="phone" class="size-5" /></span>{site.phone}</a></li>
+          <li class="flex items-center gap-4 text-mist"><span class="grid size-11 place-items-center rounded-full border border-line"><Icon name="pin" class="size-5" /></span>{site.countries.join(' · ')}</li>
+        </ul>
+      </div>
+
+      <form id="contact-form" class="card flex flex-col gap-5 p-6 sm:p-8" novalidate>
+        <div class="grid gap-5 sm:grid-cols-2">
+          <label class="flex flex-col gap-2 text-sm">Nombre *<input class={field} id="name" name="name" required autocomplete="name" placeholder="Ana Gómez" /></label>
+          <label class="flex flex-col gap-2 text-sm">Cargo<input class={field} id="role" name="role" autocomplete="organization-title" placeholder="Gerente de operaciones" /></label>
+          <label class="flex flex-col gap-2 text-sm">Empresa *<input class={field} id="company" name="company" required autocomplete="organization" placeholder="Tu empresa" /></label>
+          <label class="flex flex-col gap-2 text-sm">Tamaño de la empresa
+            <select class={field} id="size" name="size">
+              <option value="">Selecciona</option>
+              <option>1-10 empleados</option>
+              <option>11-50 empleados</option>
+              <option>51-200 empleados</option>
+              <option>201-500 empleados</option>
+              <option>Más de 500 empleados</option>
+            </select>
+          </label>
+          <label class="flex flex-col gap-2 text-sm">Correo *<input class={field} id="email" name="email" type="email" required autocomplete="email" placeholder="tu@empresa.com" /></label>
+          <label class="flex flex-col gap-2 text-sm">Teléfono<input class={field} id="phone" name="phone" type="tel" autocomplete="tel" placeholder="+57 300 000 0000" /></label>
+        </div>
+        <fieldset class="flex flex-col gap-3">
+          <legend class="mb-3 text-sm">¿Qué te interesa?</legend>
+          <div class="flex flex-wrap gap-2">
+            {
+              [...services.map((s) => s.title), 'ISPGO'].map((t, i) => (
+                <label class="cursor-pointer">
+                  <input type="radio" name="interest" value={t} id={`interest-${i}`} class="peer sr-only" />
+                  <span class="block rounded-full border border-line px-4 py-2 text-sm text-mist transition peer-checked:border-paper peer-checked:bg-paper peer-checked:text-ink peer-focus-visible:outline-2 peer-focus-visible:outline-ember hover:border-iris">{t}</span>
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+        <label class="flex flex-col gap-2 text-sm">Mensaje *<textarea class={field} id="message" name="message" required rows="5" placeholder="Queremos automatizar la atención por WhatsApp..."></textarea></label>
+        <p class="text-xs text-mist">Al enviar aceptas nuestra <a class="underline hover:text-paper" href="/politica-privacidad">política de privacidad</a>. Este sitio usa reCAPTCHA de Google.</p>
+        <button class="btn-primary w-full disabled:opacity-60 sm:w-fit" type="submit">Enviar mensaje <Icon name="arrow" class="size-4" /></button>
+        <p id="contact-status" class="min-h-6 text-sm" role="status"></p>
+      </form>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { submitJSON } from '@/lib/forms';
+
+  document.addEventListener('astro:page-load', () => {
+    const form = document.getElementById('contact-form') as HTMLFormElement | null;
+    if (!form) return;
+    const status = document.getElementById('contact-status')!;
+    const button = form.querySelector<HTMLButtonElement>('button[type=submit]')!;
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(form)) as Record<string, string>;
+      const missing = (['name', 'company', 'email', 'message'] as const).filter((k) => !data[k]?.trim());
+      if (missing.length) {
+        status.className = 'min-h-6 text-sm text-ember';
+        status.textContent = 'Completa nombre, empresa, correo y mensaje para poder responderte.';
+        form.querySelector<HTMLElement>(`#${missing[0]}`)?.focus();
+        return;
+      }
+      button.disabled = true;
+      status.className = 'min-h-6 text-sm text-mist';
+      status.textContent = 'Enviando…';
+      const res = await submitJSON('/api/contact', data, 'contact_form');
+      status.className = `min-h-6 text-sm ${res.success ? 'text-[#4ADE80]' : 'text-ember'}`;
+      status.textContent = res.message;
+      if (res.success) form.reset();
+      button.disabled = false;
+    });
+  });
+</script>

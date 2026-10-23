@@ -1,0 +1,48 @@
+---
+---
+
+<form class="newsletter-form flex flex-col gap-2" novalidate>
+  <div class="flex rounded-full border border-line bg-ink-2 p-1 focus-within:border-iris">
+    <label for="newsletter-email" class="sr-only">Correo electrónico</label>
+    <input
+      id="newsletter-email"
+      name="email"
+      type="email"
+      required
+      placeholder="tu@empresa.com"
+      class="min-w-0 flex-1 bg-transparent px-4 text-sm text-paper placeholder:text-mist/70 focus:outline-none"
+    />
+    <button class="rounded-full bg-paper px-4 py-2 text-sm font-semibold text-ink transition hover:bg-white disabled:opacity-60">
+      Suscribirme
+    </button>
+  </div>
+  <p class="newsletter-status min-h-5 text-xs text-mist" role="status"></p>
+</form>
+
+<script>
+  import { submitJSON } from '@/lib/forms';
+
+  function initNewsletter() {
+    document.querySelectorAll<HTMLFormElement>('.newsletter-form').forEach((form) => {
+      if (form.dataset.ready) return;
+      form.dataset.ready = '1';
+      const status = form.querySelector<HTMLElement>('.newsletter-status')!;
+      const button = form.querySelector('button')!;
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = new FormData(form).get('email')?.toString().trim() ?? '';
+        if (!/^\S+@\S+\.\S+$/.test(email)) {
+          status.textContent = 'Escribe un correo válido, por ejemplo nombre@empresa.com.';
+          return;
+        }
+        button.disabled = true;
+        status.textContent = 'Enviando…';
+        const res = await submitJSON('/api/newsletter', { email }, 'newsletter');
+        status.textContent = res.message;
+        if (res.success) form.reset();
+        button.disabled = false;
+      });
+    });
+  }
+  document.addEventListener('astro:page-load', initNewsletter);
+</script>

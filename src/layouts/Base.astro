@@ -1,0 +1,114 @@
+---
+import '@fontsource-variable/sora';
+import '@fontsource-variable/instrument-sans';
+import '@fontsource-variable/jetbrains-mono';
+import '@/styles/global.css';
+import { ClientRouter } from 'astro:transitions';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import { site } from '@/data/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const { title, description = site.description } = Astro.props;
+const fullTitle = title ? `${title} · Goline` : `Goline · ${site.tagline}`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL('/brand/og.png', Astro.site);
+const recaptchaKey = import.meta.env.PUBLIC_RECAPTCHA_SITE_KEY ?? process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ?? '';
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#0B0B1A" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_CO" />
+    <meta property="og:site_name" content="Goline" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    {recaptchaKey && <meta name="recaptcha-key" content={recaptchaKey} />}
+    <script is:inline>document.documentElement.classList.add('js');</script>
+    <script type="application/ld+json" set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: 'Goline',
+      url: 'https://www.goline.com.co',
+      logo: 'https://www.goline.com.co/brand/goline-mark.svg',
+      email: site.email,
+      telephone: site.phone,
+      areaServed: site.countries,
+      owns: { '@type': 'SoftwareApplication', name: 'ISPGO', url: 'https://ispgo.net' },
+    })} />
+    <ClientRouter />
+  </head>
+  <body class="min-h-dvh overflow-x-clip">
+    <a href="#main" class="sr-only z-[60] rounded-full bg-paper px-4 py-2 text-ink focus:not-sr-only focus:fixed focus:top-4 focus:left-4">Saltar al contenido</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+
+    <script>
+      function initMotion() {
+        // Aparición progresiva de bloques marcados con data-reveal.
+        const items = document.querySelectorAll<HTMLElement>('[data-reveal]:not(.is-in)');
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const e of entries) {
+              if (e.isIntersecting) {
+                e.target.classList.add('is-in');
+                io.unobserve(e.target);
+              }
+            }
+          },
+          { rootMargin: '0px 0px -8% 0px' },
+        );
+        items.forEach((el) => io.observe(el));
+
+        // Foco de luz que sigue al cursor en las tarjetas .spotlight.
+        document.querySelectorAll<HTMLElement>('.spotlight').forEach((el) => {
+          el.addEventListener('pointermove', (ev) => {
+            const r = el.getBoundingClientRect();
+            el.style.setProperty('--mx', `${ev.clientX - r.left}px`);
+            el.style.setProperty('--my', `${ev.clientY - r.top}px`);
+          });
+        });
+
+        // Contadores animados.
+        document.querySelectorAll<HTMLElement>('[data-count]').forEach((el) => {
+          const target = Number(el.dataset.count);
+          const suffix = el.dataset.suffix ?? '';
+          const run = () => {
+            const start = performance.now();
+            const step = (t: number) => {
+              const p = Math.min(1, (t - start) / 1400);
+              el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3))) + suffix;
+              if (p < 1) requestAnimationFrame(step);
+            };
+            requestAnimationFrame(step);
+          };
+          if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+          new IntersectionObserver((entries, obs) => {
+            if (entries[0].isIntersecting) {
+              run();
+              obs.disconnect();
+            }
+          }).observe(el);
+        });
+      }
+      document.addEventListener('astro:page-load', initMotion);
+    </script>
+  </body>
+</html>
