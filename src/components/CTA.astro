@@ -1,0 +1,29 @@
+---
+import Icon from './Icon.astro';
+import NeuralField from './NeuralField.astro';
+interface Props { title?: string; text?: string }
+const {
+  title = '¿Qué proceso de tu empresa debería hacerlo una IA?',
+  text = 'Cuéntanos qué te quita tiempo. En dos semanas te mostramos un prototipo funcionando con tus datos.',
+} = Astro.props;
+---
+
+<section class="container-x mt-32">
+  <div class="relative overflow-hidden rounded-[2rem] bg-brand-gradient p-[1px]" data-reveal>
+    <div class="relative overflow-hidden rounded-[calc(2rem-1px)] bg-ink px-6 py-16 sm:px-14 sm:py-20">
+      <NeuralField class="absolute inset-0 size-full opacity-60" density={0.6} />
+      <div class="absolute -top-40 -right-20 size-96 rounded-full bg-iris/30 blur-3xl"></div>
+      <div class="absolute -bottom-40 -left-20 size-96 rounded-full bg-ember/20 blur-3xl"></div>
+      <div class="relative flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+        <div class="flex max-w-2xl flex-col gap-5">
+          <h2 class="text-3xl leading-tight font-bold sm:text-5xl">{title}</h2>
+          <p class="text-lg text-mist">{text}</p>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <a href="/contacto" class="btn-primary">Agenda un diagnóstico <Icon name="arrow" class="size-4" /></a>
+          <a href="https://wa.me/573207753755" class="btn-ghost">WhatsApp</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

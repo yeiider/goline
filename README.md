@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Goline · sitio web
 
-## Getting Started
+Sitio de [goline.com.co](https://www.goline.com.co) construido con [Astro](https://astro.build), Tailwind CSS 4 y desplegado en Vercel.
 
-First, run the development server:
+## Desarrollo
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev      # http://localhost:4321
+npm run build    # genera .vercel/output
+npm run check    # revisión de tipos
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Copia `.env.example` a `.env` para probar los formularios. Sin claves de reCAPTCHA la verificación se omite; sin credenciales de Firebase los endpoints responden con error 500.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Estructura
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Ruta | Contenido |
+| --- | --- |
+| `src/pages/index.astro` | Inicio |
+| `src/pages/[service].astro` | Páginas de servicio (`/inteligencia-artificial`, `/modelado-negocios-digitales`, `/ecommerce`, `/infra`, `/staff`) generadas desde `src/data/site.ts` |
+| `src/pages/ispgo.astro` | Página de ISPGO, producto de Goline |
+| `src/pages/[legal].astro` | Términos, privacidad y código de ética desde `src/content/legal/*.md` |
+| `src/pages/blog.astro` | Blog desde `src/content/blog/*.md` |
+| `src/pages/api/contact.ts`, `newsletter.ts` | Endpoints (Vercel Functions) que guardan en Firestore y verifican reCAPTCHA v3 en el servidor |
+| `src/pages/marca.astro` | Guía de marca pública con los logos para descargar |
 
-## Learn More
+## Marca
 
-To learn more about Next.js, take a look at the following resources:
+- Logo: `public/brand/*.svg`. Se generan con `npm run logo` (`scripts/build-logo.mjs`), que convierte el texto de Sora 700 a trazos.
+- Colores: Ink `#0B0B1A`, Paper `#F6F5FB`, Volt `#3B5BFF`, Iris `#8A5CFF`, Ember `#FF6A3D`. Definidos como tokens en `src/styles/global.css`.
+- Tipografía: Sora (títulos), Instrument Sans (texto), JetBrains Mono (datos y etiquetas), servidas desde `@fontsource-variable`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Variables de entorno (Vercel)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Variable | Uso |
+| --- | --- |
+| `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY` | Firestore (colecciones `contact` y `newsletter`) |
+| `RECAPTCHA_API_KEY` | Clave secreta de reCAPTCHA v3 |
+| `PUBLIC_RECAPTCHA_SITE_KEY` | Clave pública de reCAPTCHA v3 (si no existe se usa `NEXT_PUBLIC_RECAPTCHA_SITE_KEY`) |

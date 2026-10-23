@@ -1,0 +1,52 @@
+---
+import Logo from './Logo.astro';
+import Newsletter from './Newsletter.astro';
+import { site, services } from '@/data/site';
+const year = new Date().getFullYear();
+---
+
+<footer class="relative mt-24 overflow-hidden border-t border-line">
+  <div class="container-x grid gap-14 py-16 lg:grid-cols-[1.3fr_1fr_1fr_1.3fr]">
+    <div class="flex flex-col gap-5">
+      <Logo class="h-9 w-auto self-start text-paper" />
+      <p class="max-w-xs text-sm leading-relaxed text-mist">{site.tagline} Ingeniería de software, agentes de IA y crecimiento digital desde Latinoamérica.</p>
+      <p class="font-mono text-xs text-mist">{site.countries.join(' · ')}</p>
+    </div>
+    <div>
+      <h2 class="eyebrow mb-5">Servicios</h2>
+      <ul class="space-y-3 text-sm">
+        {services.map((s) => <li><a class="text-mist hover:text-paper" href={`/${s.slug}`}>{s.title}</a></li>)}
+      </ul>
+    </div>
+    <div>
+      <h2 class="eyebrow mb-5">Goline</h2>
+      <ul class="space-y-3 text-sm">
+        <li><a class="text-mist hover:text-paper" href="/ispgo">ISPGO</a></li>
+        <li><a class="text-mist hover:text-paper" href="/sobre-goline">Sobre Goline</a></li>
+        <li><a class="text-mist hover:text-paper" href="/blog">Blog</a></li>
+        <li><a class="text-mist hover:text-paper" href="/marca">Marca</a></li>
+        <li><a class="text-mist hover:text-paper" href="/contacto">Contacto</a></li>
+      </ul>
+    </div>
+    <div class="flex flex-col gap-5">
+      <h2 class="eyebrow">Newsletter</h2>
+      <p class="text-sm text-mist">Casos reales de IA y software, una vez al mes.</p>
+      <Newsletter />
+      <div class="space-y-1 text-sm">
+        <a class="block text-paper hover:text-iris" href={`mailto:${site.email}`}>{site.email}</a>
+        <a class="block text-mist hover:text-paper" href={site.whatsapp}>{site.phone}</a>
+      </div>
+    </div>
+  </div>
+  <div class="border-t border-line">
+    <div class="container-x flex flex-col gap-3 py-6 text-xs text-mist sm:flex-row sm:items-center sm:justify-between">
+      <p>© {year} Goline. Todos los derechos reservados.</p>
+      <div class="flex flex-wrap gap-x-5 gap-y-2">
+        <a class="hover:text-paper" href="/terminos">Términos</a>
+        <a class="hover:text-paper" href="/politica-privacidad">Privacidad</a>
+        <a class="hover:text-paper" href="/codigo-etica">Código de ética</a>
+      </div>
+    </div>
+  </div>
+  <p aria-hidden="true" class="pointer-events-none select-none text-center font-display text-[22vw] leading-[0.75] font-extrabold tracking-tighter text-ink-2">goline</p>
+</footer>

@@ -1,0 +1,22 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '@/layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const docs = await getCollection('legal');
+  return docs.map((doc) => ({ params: { legal: doc.id }, props: { doc } }));
+}
+
+const { doc } = Astro.props;
+const { Content, headings } = await render(doc);
+const title = headings.find((h) => h.depth === 1)?.text ?? 'Goline';
+---
+
+<Base title={title}>
+  <section class="container-x pt-40">
+    <span class="eyebrow">Legal</span>
+    <article class="prose-goline mt-6">
+      <Content />
+    </article>
+  </section>
+</Base>

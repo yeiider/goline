@@ -1,0 +1,68 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '@/layouts/Base.astro';
+import CTA from '@/components/CTA.astro';
+
+const posts = (await getCollection('blog')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const categories = [...new Set(posts.map((p) => p.data.category))];
+const fmt = new Intl.DateTimeFormat('es-CO', { dateStyle: 'long' });
+---
+
+<Base title="Blog" description="Ideas sobre inteligencia artificial, e-commerce, ciberseguridad y transformación digital del equipo de Goline.">
+  <section class="container-x pt-40">
+    <div class="flex flex-col gap-6">
+      <span class="eyebrow">Blog</span>
+      <h1 class="max-w-3xl text-4xl leading-[1.04] font-extrabold tracking-[-0.03em] sm:text-6xl">Ideas para construir con IA y software.</h1>
+    </div>
+    <div class="blog-filters mt-10 flex flex-wrap gap-2" role="group" aria-label="Filtrar por categoría">
+      <button class="filter is-active" data-cat="">Todas</button>
+      {categories.map((c) => <button class="filter" data-cat={c}>{c}</button>)}
+    </div>
+    <ul class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        posts.map((p, i) => (
+          <li class="post card spotlight group flex flex-col" data-cat={p.data.category} data-reveal style={`--d:${(i % 3) * 80}ms`}>
+            <div class="aspect-[16/10] overflow-hidden">
+              <img src={p.data.image} alt="" loading="lazy" class="size-full object-cover opacity-80 transition duration-700 group-hover:scale-105 group-hover:opacity-100" />
+            </div>
+            <div class="flex flex-1 flex-col gap-3 p-6">
+              <span class="font-mono text-xs text-iris">{p.data.category}</span>
+              <h2 class="text-xl font-semibold">{p.data.title}</h2>
+              <p class="line-clamp-4 text-sm leading-relaxed text-mist">{p.data.description}</p>
+              <p class="mt-auto pt-3 text-xs text-mist">{p.data.author} · <time datetime={p.data.date.toISOString()}>{fmt.format(p.data.date)}</time></p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+  <CTA />
+</Base>
+
+<style>
+  .filter {
+    border: 1px solid var(--color-line);
+    border-radius: 999px;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    color: var(--color-mist);
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  .filter:hover { color: var(--color-paper); border-color: var(--color-iris); }
+  .filter.is-active { background: var(--color-paper); color: var(--color-ink); border-color: var(--color-paper); }
+</style>
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    const buttons = document.querySelectorAll<HTMLButtonElement>('.blog-filters .filter');
+    buttons.forEach((b) =>
+      b.addEventListener('click', () => {
+        buttons.forEach((x) => x.classList.toggle('is-active', x === b));
+        document.querySelectorAll<HTMLElement>('.post').forEach((p) => {
+          p.hidden = !!b.dataset.cat && p.dataset.cat !== b.dataset.cat;
+        });
+      }),
+    );
+  });
+</script>

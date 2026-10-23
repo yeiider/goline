@@ -1,0 +1,78 @@
+---
+import Base from '@/layouts/Base.astro';
+import Logo from '@/components/Logo.astro';
+import SectionHeading from '@/components/SectionHeading.astro';
+import NeuralField from '@/components/NeuralField.astro';
+import CTA from '@/components/CTA.astro';
+import { site } from '@/data/site';
+
+const values = [
+  { t: 'Ingeniería primero', d: 'Decisiones técnicas que resisten el crecimiento. Código revisado, probado y documentado.' },
+  { t: 'IA con propósito', d: 'Usamos inteligencia artificial donde mueve una métrica de negocio, no como adorno.' },
+  { t: 'Cerca del cliente', d: 'Trabajamos mano a mano con tu equipo y mostramos avances cada dos semanas.' },
+  { t: 'Aprendizaje continuo', d: 'Investigamos, probamos y compartimos lo que funciona en cada proyecto.' },
+];
+const facts = [
+  { n: '3', l: 'países con clientes' },
+  { n: '5', l: 'líneas de servicio' },
+  { n: '1', l: 'producto SaaS propio: ISPGO' },
+  { n: '24/7', l: 'agentes de IA en operación' },
+];
+---
+
+<Base title="Sobre Goline" description="Goline es una firma de ingeniería de software e inteligencia artificial con clientes en Colombia, México y Chile, y dueña de ISPGO.">
+  <section class="relative isolate overflow-hidden pt-40 pb-24">
+    <NeuralField class="absolute inset-0 -z-10 size-full opacity-60" density={0.6} />
+    <div class="container-x grid items-center gap-16 lg:grid-cols-[1.4fr_1fr]">
+      <div class="flex flex-col gap-7">
+        <span class="eyebrow">Sobre Goline</span>
+        <h1 class="text-4xl leading-[1.04] font-extrabold tracking-[-0.03em] sm:text-6xl">Somos la línea entre una idea y el software que la hace realidad.</h1>
+        <p class="max-w-2xl text-lg leading-relaxed text-mist">
+          Goline nació construyendo e-commerce y software a medida para marcas de Latinoamérica. Hoy somos una firma de ingeniería que une desarrollo, datos e inteligencia artificial, y creamos productos propios como ISPGO.
+        </p>
+      </div>
+      <div class="hidden justify-center lg:flex" aria-hidden="true">
+        <Logo variant="mark" animate class="size-72 animate-float drop-shadow-[0_0_80px_rgba(138,92,255,0.5)]" />
+      </div>
+    </div>
+  </section>
+
+  <section class="container-x">
+    <dl class="grid gap-px overflow-hidden rounded-3xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+      {
+        facts.map((f, i) => (
+          <div class="flex flex-col gap-2 bg-ink p-8" data-reveal style={`--d:${i * 80}ms`}>
+            <dt class="order-2 text-sm text-mist">{f.l}</dt>
+            <dd class="order-1 font-display text-5xl font-bold text-gradient">{f.n}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </section>
+
+  <section class="container-x grid gap-12 pt-28 lg:grid-cols-2">
+    <SectionHeading eyebrow="Misión" title="Hacer que la IA trabaje para las empresas de Latinoamérica." />
+    <div class="flex flex-col gap-5 text-lg leading-relaxed text-mist" data-reveal>
+      <p>Creemos que la inteligencia artificial solo vale cuando resuelve un problema real: responder más rápido a un cliente, cobrar a tiempo, vender más o detectar una falla antes de que ocurra.</p>
+      <p>Por eso combinamos tres cosas en cada proyecto: ingeniería de software sólida, datos bien organizados y una marca que comunica con claridad.</p>
+      <p class="font-mono text-sm text-paper">{site.countries.join(' · ')} · servicios para LATAM y Estados Unidos</p>
+    </div>
+  </section>
+
+  <section class="container-x pt-28">
+    <SectionHeading eyebrow="Valores" title="Cómo trabajamos." />
+    <div class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        values.map((v, i) => (
+          <article class="card spotlight flex flex-col gap-4 p-7" data-reveal style={`--d:${i * 80}ms`}>
+            <span class="h-1 w-10 rounded-full bg-brand-gradient" />
+            <h3 class="text-xl font-semibold">{v.t}</h3>
+            <p class="text-sm leading-relaxed text-mist">{v.d}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <CTA title="Construyamos lo próximo de tu empresa." text="Escríbenos y agenda una conversación de 30 minutos con nuestro equipo." />
+</Base>

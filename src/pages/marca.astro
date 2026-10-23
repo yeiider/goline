@@ -1,0 +1,111 @@
+---
+import Base from '@/layouts/Base.astro';
+import Logo from '@/components/Logo.astro';
+import SectionHeading from '@/components/SectionHeading.astro';
+
+const colors = [
+  { name: 'Ink', hex: '#0B0B1A', use: 'Fondo y texto', light: false },
+  { name: 'Paper', hex: '#F6F5FB', use: 'Fondo claro y texto', light: true },
+  { name: 'Volt', hex: '#3B5BFF', use: 'Acción y enlaces', light: false },
+  { name: 'Iris', hex: '#8A5CFF', use: 'IA y destacados', light: false },
+  { name: 'Ember', hex: '#FF6A3D', use: 'Nodo y CTA clave', light: false },
+];
+const files = [
+  ['Logo horizontal (fondo oscuro)', 'goline-logo.svg', 'bg-ink'],
+  ['Logo horizontal (fondo claro)', 'goline-logo-dark.svg', 'bg-paper'],
+  ['Logo vertical', 'goline-logo-vertical.svg', 'bg-ink'],
+  ['Logo blanco', 'goline-logo-white.svg', 'bg-brand-gradient'],
+  ['Isotipo', 'goline-mark.svg', 'bg-ink'],
+  ['Isotipo (fondo claro)', 'goline-mark-dark.svg', 'bg-paper'],
+];
+---
+
+<Base title="Marca" description="Guía de identidad de Goline: logo, colores, tipografía y archivos para descargar.">
+  <section class="container-x pt-40">
+    <div class="flex flex-col gap-7">
+      <span class="eyebrow">Identidad de marca</span>
+      <Logo class="h-16 w-auto text-paper sm:h-20" animate />
+      <h1 class="max-w-3xl text-4xl leading-[1.04] font-extrabold tracking-[-0.03em] sm:text-6xl">Una línea que piensa.</h1>
+      <p class="max-w-2xl text-lg leading-relaxed text-mist">
+        La G se dibuja con un solo trazo continuo que termina en un nodo: la neurona donde los datos se vuelven decisión. El mismo nodo es el punto de la "i". El degradado va del azul de la ingeniería al coral de la creatividad.
+      </p>
+    </div>
+  </section>
+
+  <section class="container-x pt-24">
+    <SectionHeading eyebrow="Archivos" title="Descarga el logo." />
+    <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        files.map(([label, file, bg]) => (
+          <a href={`/brand/${file}`} download class="card group flex flex-col" data-reveal>
+            <span class={`grid h-44 place-items-center p-8 ${bg}`}>
+              <img src={`/brand/${file}`} alt={label} class="max-h-20 w-auto transition duration-500 group-hover:scale-105" loading="lazy" />
+            </span>
+            <span class="flex items-center justify-between p-4 text-sm">
+              {label}
+              <span class="font-mono text-xs text-iris">SVG ↓</span>
+            </span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="container-x pt-24">
+    <SectionHeading eyebrow="Color" title="Ink de base, luz de acento." text="Proporción recomendada: Ink 60 %, Paper 25 %, Volt 8 %, Iris 4 %, Ember 3 %. El degradado se reserva para el símbolo y titulares cortos." />
+    <div class="mt-10 grid grid-cols-2 gap-4 md:grid-cols-5">
+      {
+        colors.map((c) => (
+          <div class="overflow-hidden rounded-3xl border border-line" data-reveal>
+            <div class="h-32" style={`background:${c.hex}`} />
+            <div class="flex flex-col gap-1 p-4">
+              <span class="font-display font-semibold">{c.name}</span>
+              <span class="font-mono text-xs text-mist">{c.hex}</span>
+              <span class="text-xs text-mist">{c.use}</span>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+    <div class="mt-4 h-24 rounded-3xl bg-brand-gradient" data-reveal></div>
+  </section>
+
+  <section class="container-x pt-24">
+    <SectionHeading eyebrow="Tipografía" title="Tres voces, un sistema." />
+    <div class="mt-10 flex flex-col divide-y divide-line border-y border-line">
+      <div class="grid gap-4 py-8 md:grid-cols-[220px_1fr]" data-reveal>
+        <span class="font-mono text-xs text-mist">Sora · 600–800<br />Titulares y logotipo</span>
+        <span class="font-display text-4xl font-extrabold tracking-tight sm:text-5xl">Automatizamos lo complejo.</span>
+      </div>
+      <div class="grid gap-4 py-8 md:grid-cols-[220px_1fr]" data-reveal>
+        <span class="font-mono text-xs text-mist">Instrument Sans · 400–600<br />Texto y UI</span>
+        <span class="text-xl">Diseñamos, construimos y operamos software con inteligencia artificial para empresas de Colombia, México y Chile.</span>
+      </div>
+      <div class="grid gap-4 py-8 md:grid-cols-[220px_1fr]" data-reveal>
+        <span class="font-mono text-xs text-mist">JetBrains Mono · 400–500<br />Datos, etiquetas y código</span>
+        <span class="font-mono text-lg text-iris">agent.run(&#123; canal: "whatsapp" &#125;)</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="container-x grid gap-4 pt-24 md:grid-cols-2">
+    <div class="card flex flex-col gap-4 p-8" data-reveal>
+      <h2 class="text-2xl font-bold text-[#4ADE80]">Así sí</h2>
+      <ul class="flex list-disc flex-col gap-2 pl-5 text-mist">
+        <li>Frases cortas, verbos de acción y resultados medibles.</li>
+        <li>Tutear al cliente.</li>
+        <li>Mostrar producto real: ISPGO, agentes, tableros.</li>
+        <li>Respetar un área libre igual al alto de la "o" alrededor del logo.</li>
+      </ul>
+    </div>
+    <div class="card flex flex-col gap-4 p-8" data-reveal style="--d:80ms">
+      <h2 class="text-2xl font-bold text-ember">Así no</h2>
+      <ul class="flex list-disc flex-col gap-2 pl-5 text-mist">
+        <li>"Soluciones innovadoras de vanguardia" y jerga vacía.</li>
+        <li>Fotos genéricas de bancos de imágenes.</li>
+        <li>Estirar, rotar o recolorear el logo.</li>
+        <li>Usar el isotipo a menos de 20 px.</li>
+      </ul>
+    </div>
+  </section>
+</Base>

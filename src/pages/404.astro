@@ -1,0 +1,14 @@
+---
+import Base from '@/layouts/Base.astro';
+import Logo from '@/components/Logo.astro';
+---
+
+<Base title="Página no encontrada">
+  <section class="container-x flex min-h-[70vh] flex-col items-center justify-center gap-6 pt-32 text-center">
+    <Logo variant="mark" animate class="size-28" />
+    <p class="font-mono text-sm text-iris">404</p>
+    <h1 class="text-4xl font-bold sm:text-5xl">Esta línea no lleva a ninguna parte.</h1>
+    <p class="text-mist">La página que buscas no existe o cambió de dirección.</p>
+    <a href="/" class="btn-primary">Volver al inicio</a>
+  </section>
+</Base>

@@ -1,0 +1,76 @@
+---
+import Base from '@/layouts/Base.astro';
+import Icon from '@/components/Icon.astro';
+import SectionHeading from '@/components/SectionHeading.astro';
+import AgentDemo from '@/components/AgentDemo.astro';
+import NeuralField from '@/components/NeuralField.astro';
+import CTA from '@/components/CTA.astro';
+
+const modules = [
+  ['chart', 'Facturación y cobros', 'Facturas, saldos y links de pago con Wompi u OnePay.'],
+  ['check', 'Contratos', 'Generados desde plantillas y firmados desde el celular.'],
+  ['layers', 'Cajas y recaudo', 'Caja general, puntos de recaudo y cuadre diario.'],
+  ['chat', 'Tickets de soporte', 'Asignación, seguimiento y actas en PDF con fotos y firma.'],
+  ['pin', 'Planta de fibra', 'Cajas NAP, troncales y muflas en el mapa, con topología.'],
+  ['wifi', 'Red y equipos', 'MikroTik, OLTs y ONUs, con integración a SmartOLT.'],
+  ['bolt', 'OLTGO', 'Monitoreo SNMP de OLTs ZTE con históricos de 400 días.'],
+  ['users', 'App para técnicos', 'GeoNAP, tickets, actas y ubicación en tiempo real.'],
+] as const;
+---
+
+<Base title="ISPGO, un producto de Goline" description="ISPGO es el software de gestión para ISP creado por Goline: facturación, contratos, tickets, planta de fibra, monitoreo de OLTs y un agente de IA en WhatsApp.">
+  <section class="relative isolate overflow-hidden pt-40 pb-20">
+    <NeuralField class="absolute inset-0 -z-10 size-full opacity-60" density={0.7} />
+    <div class="absolute top-10 left-1/2 -z-10 h-[420px] w-[820px] -translate-x-1/2 rounded-full bg-volt/20 blur-[120px]"></div>
+    <div class="container-x flex flex-col items-center gap-7 text-center">
+      <span class="rounded-full border border-line bg-ink-2/70 px-4 py-1.5 font-mono text-xs text-mist">un producto de <span class="text-paper">Goline</span></span>
+      <h1 class="max-w-4xl text-5xl leading-[1.02] font-extrabold tracking-[-0.035em] sm:text-7xl">Todo tu ISP en una sola plataforma.</h1>
+      <p class="max-w-2xl text-lg leading-relaxed text-mist">De la oficina al poste. Menos hojas de cálculo, menos llamadas y más clientes conectados, para ISP pequeños y medianos con redes FTTH.</p>
+      <div class="flex flex-wrap justify-center gap-3">
+        <a href="https://ispgo.net" class="btn-primary" rel="noopener">Ir a ispgo.net <Icon name="arrow" class="size-4" /></a>
+        <a href="/contacto" class="btn-ghost">Solicitar demo</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="container-x">
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        modules.map(([icon, t, d], i) => (
+          <article class="card spotlight flex flex-col gap-4 p-6" data-reveal style={`--d:${(i % 4) * 70}ms`}>
+            <span class="grid size-11 place-items-center rounded-2xl border border-line bg-ink-3 text-ember"><Icon name={icon} class="size-5" /></span>
+            <h2 class="text-lg font-semibold">{t}</h2>
+            <p class="text-sm leading-relaxed text-mist">{d}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="container-x pt-28">
+    <div class="grid items-center gap-12 lg:grid-cols-2">
+      <SectionHeading
+        eyebrow="Agente de IA"
+        title="Tu ISP atiende por WhatsApp a cualquier hora."
+        text="El agente consulta saldos, envía links de pago, abre tickets, diagnostica ONUs y reinicia equipos con datos reales, mediante un servidor MCP. Los casos complejos pasan a una persona."
+      />
+      <div data-reveal><AgentDemo /></div>
+    </div>
+  </section>
+
+  <section class="container-x pt-28">
+    <SectionHeading eyebrow="Planes" title="Elige cómo lo despliegas." text="Ambos planes incluyen todos los módulos. El precio se cotiza según tu operación." />
+    <div class="mt-12 grid gap-4 md:grid-cols-2">
+      <article class="card spotlight flex flex-col gap-4 p-8" data-reveal>
+        <h3 class="text-2xl font-bold">ISPGO Cloud</h3>
+        <p class="text-mist">Nosotros alojamos y mantenemos tu instancia, con actualizaciones continuas.</p>
+      </article>
+      <article class="card spotlight flex flex-col gap-4 p-8" data-reveal style="--d:80ms">
+        <h3 class="text-2xl font-bold">On-premise</h3>
+        <p class="text-mist">Se instala en tus servidores, con control total de los datos. Las actualizaciones se cotizan aparte.</p>
+      </article>
+    </div>
+  </section>
+
+  <CTA title="¿Tienes un ISP? Te mostramos ISPGO en vivo." text="Agenda una demo de 30 minutos con tu operación real: clientes, red y cobros." />
+</Base>
