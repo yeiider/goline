@@ -4,8 +4,8 @@ export const site = {
   description:
     'Goline es una firma de ingeniería de software e inteligencia artificial. Construimos producto, automatizamos procesos con agentes de IA y hacemos crecer marcas en Colombia, México y Chile.',
   email: 'contacto@goline.com.co',
-  phone: '+57 320 775 3755',
-  whatsapp: 'https://wa.me/573207753755',
+  phone: '+1 (555) 307-7419',
+  whatsapp: 'https://wa.me/15553077419',
   countries: ['Colombia', 'México', 'Chile'],
 };
 
